@@ -1,12 +1,11 @@
 #include QMK_KEYBOARD_H
 
-
 #ifdef RGBLIGHT_ENABLE
 //Following line allows macro to read current RGB settings
 extern rgblight_config_t rgblight_config;
 #endif
 
-extern uint8_t is_master;
+//extern uint8_t is_master;
 
 // Each layer gets a name for readability, which is then used in the keymap matrix below.
 // The underscores don't mean anything - you can have a layer called STUFF or any other name.
@@ -16,42 +15,65 @@ extern uint8_t is_master;
 #define _LOWER 1
 #define _RAISE 2
 #define _ADJUST 3
+#define _NUMBERS 4
+#define _NAVIGATION 5
+//Tap Dance Declarations
+enum {
+  TD_LALT_LGUI = 0,
+  TD_LSHIFT_OPENPARENTHESIS = 1,
+  TD_RSHIFT_CLOSEPARENTHESIS = 2,
+};
 
+//Tap Dance Definitions
+qk_tap_dance_action_t tap_dance_actions[] = {
+  //Tap once for left Alt, twice for Left Gui
+  [TD_LALT_LGUI]  = ACTION_TAP_DANCE_DOUBLE(KC_LALT, KC_LGUI),
+  [TD_LSHIFT_OPENPARENTHESIS] = ACTION_TAP_DANCE_DOUBLE(KC_LSFT, LSFT(KC_8)),
+  [TD_RSHIFT_CLOSEPARENTHESIS] = ACTION_TAP_DANCE_DOUBLE(KC_RSFT, RSFT(KC_9)),
+  // Other declarations would go here, separated by commas, if you have them
+
+};
 enum custom_keycodes {
   QWERTY = SAFE_RANGE,
   LOWER,
   RAISE,
   ADJUST,
   BACKLIT,
-  RGBRST
+  NUMBERS,
+  NAVIGATION,
+  RGBRST, // reset RGB lightning
+  LT_NMRA = LT(_NUMBERS, KC_RALT), // Toggle to numbers layer when pressed and hold, right alt if tapped TODO mybo as oneshot action
+  LT_NMSP = LT(_NUMBERS, KC_SPC), // Toggle to numbers layer when pressed and hold, space if tapped
+  // TapDance_OneTap_TwoTaps
+  TD_LALG = TD(TD_LALT_LGUI), //Left Alt, Left GUI
+  TD_LSPO = TD(TD_LSHIFT_OPENPARENTHESIS), //Left Shift, (
+  TD_RSPC = TD(TD_RSHIFT_CLOSEPARENTHESIS), //Right Shift, )
+  DE_CBTO = RALT(KC_7),
+  DE_BRTO = RALT(KC_8),
+  DE_BRTC = RALT(KC_9),
+  DE_CBTC = RALT(KC_0),
+  DE_HASH = KC_NUHS,
+  DE_SLSH = LSFT(KC_7),
+  DE_BSLS = RALT(KC_MINS),
+  DE_SHPS = KC_MINS,
 };
 
 enum macro_keycodes {
   KC_SAMPLEMACRO,
 };
 
-//Tap Dance Declarations
-enum {
-  TD_LALT_LGUI = 0
-};
 
-//Tap Dance Definitions
-qk_tap_dance_action_t tap_dance_actions[] = {
-  //Tap once for left Alt, twice for Left Gui
-  [TD_LALT_LGUI]  = ACTION_TAP_DANCE_DOUBLE(KC_LALT, KC_LGUI)
-// Other declarations would go here, separated by commas, if you have them
-};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT( \
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
        KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                         KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,  KC_BSPC,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LSPO,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_RSPC,\
+      TD_LSPO,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, TD_RSPC,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LCTL,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_QUOT,\
+     KC_LCTRL,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_QUOT,\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                 TD(TD_LALT_LGUI),   LOWER,  KC_SPC,     KC_ENT,  RAISE,  KC_RALT \
+                                          TD_LALG,   LOWER, LT_NMSP,     KC_ENT,  RAISE,  LT_NMRA\
                                       //`--------------------------'  `--------------------------'
 
   ),
@@ -60,11 +82,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
        KC_ESC,   KC_F1,   KC_F2,   KC_F3,   KC_F4,    KC_1,                       KC_INS, KC_KP_7, KC_KP_8, KC_KP_9, KC_PAST, KC_BSPC,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LSPO,   KC_F5,   KC_F6,   KC_F7,   KC_F8,    KC_2,                       KC_DEL, KC_KP_4, KC_KP_5, KC_KP_6, KC_PPLS, KC_RSPC,\
+      _______,   KC_F5,   KC_F6,   KC_F7,   KC_F8,    KC_2,                       KC_DEL, KC_KP_4, KC_KP_5, KC_KP_6, KC_PPLS, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LCTL,   KC_F9,  KC_F10,  KC_F11,  KC_F12,    KC_3,                      XXXXXXX, KC_KP_1, KC_KP_2, KC_KP_3, KC_PMNS, KC_PSLS,\
+      _______,   KC_F9,  KC_F10,  KC_F11,  KC_F12,    KC_3,                     KC_PSLS , KC_KP_1, KC_KP_2, KC_KP_3, KC_PMNS, _______,\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                 TD(TD_LALT_LGUI),   LOWER,  KC_SPC,     KC_ENT,   RAISE,    KC_0 \
+                                          _______, _______, _______,    _______, _______,    KC_0\
                                       //`--------------------------'  `--------------------------'
     ),
 
@@ -72,23 +94,35 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
        KC_ESC, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,                      KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_BSPC,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LSPO, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_TILD,                      KC_MINS,  KC_EQL, KC_LCBR, KC_RCBR, KC_PIPE, KC_RSPC,\
+      _______, DE_CBTO, DE_BRTO, DE_BRTC, DE_CBTC, KC_TILD,                      KC_MINS,  KC_EQL, KC_LCBR, KC_RCBR, KC_PIPE, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LCTL, KC_UNDO,  KC_CUT, KC_COPY,KC_PASTE, XXXXXXX,                      KC_UNDS, KC_PLUS, KC_LBRC, KC_RBRC, KC_BSLS,  KC_GRV,\
+      _______, DE_SLSH, DE_BSLS, DE_SHPS, XXXXXXX,  KC_GRV,                      KC_UNDS, KC_PLUS, KC_LBRC, KC_RBRC, KC_BSLS, _______,\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                 TD(TD_LALT_LGUI),   LOWER,  KC_SPC,     KC_ENT,   RAISE, KC_RALT \
+                                          _______, _______, _______,    _______, _______, _______\
                                       //`--------------------------'  `--------------------------'
   ),
 
   [_ADJUST] = LAYOUT( \
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-        RESET,  RGBRST, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_NLCK,\
+        RESET,  RGBRST, RGB_M_P,RGB_M_SW, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_NLCK,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, KC_VOLU, KC_BRIU,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
+      _______, RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, XXXXXXX,                     XXXXXXX, KC_LEFT,   KC_UP, KC_DOWN, KC_RGHT, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD, KC_VOLD, KC_BRID,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
+      _______, RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD, XXXXXXX,                     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                 TD(TD_LALT_LGUI),   LOWER,  KC_SPC,     KC_ENT,   RAISE, KC_RALT \
+                                          _______, _______, _______,    _______, _______, _______\
+                                      //`--------------------------'  `--------------------------'
+  ),
+
+  [_NUMBERS] = LAYOUT( \
+  //,-----------------------------------------------------.                    ,-----------------------------------------------------.
+        KC_F1,   KC_F2,   KC_F3,   KC_F4,    KC_5,   KC_F6,                        KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11,  KC_F12,\
+  //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
+      _______,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                         KC_6,    KC_7,    KC_8,    KC_9,    KC_0, _______,\
+  //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
+      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,\
+  //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
+                                          _______, _______, _______,    _______, _______, _______\
                                       //`--------------------------'  `--------------------------'
   )
 };
@@ -202,6 +236,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           layer_on(_ADJUST);
         } else {
           layer_off(_ADJUST);
+        }
+        return false;
+    case NUMBERS:
+        if (record->event.pressed) {
+          layer_on(_NUMBERS);
+        } else {
+          layer_off(_NUMBERS);
         }
         return false;
     case RGB_MOD:
