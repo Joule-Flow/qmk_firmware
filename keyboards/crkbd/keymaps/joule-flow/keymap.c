@@ -5,6 +5,12 @@
 extern rgblight_config_t rgblight_config;
 #endif
 
+#ifdef SSD1306OLED
+  #include "ssd1306.h"
+#endif
+
+extern uint8_t is_master;
+
 //extern uint8_t is_master;
 
 // Each layer gets a name for readability, which is then used in the keymap matrix below.
@@ -17,6 +23,7 @@ extern rgblight_config_t rgblight_config;
 #define _ADJUST 3
 #define _NUMBERS 4
 #define _NAVIGATION 5
+
 //Tap Dance Declarations
 enum {
   TD_LALT_LGUI = 0,
@@ -56,12 +63,14 @@ enum custom_keycodes {
   DE_SLSH = LSFT(KC_7),
   DE_BSLS = RALT(KC_MINS),
   DE_SHPS = KC_MINS,
+  DE_LSTN = KC_NUBS,
+  DE_GRTN = LSFT(KC_NUBS),
+  DE_PIPE = RALT(KC_NUBS)
 };
 
 enum macro_keycodes {
   KC_SAMPLEMACRO,
 };
-
 
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -73,7 +82,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
      KC_LCTRL,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_QUOT,\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          TD_LALG,   LOWER, LT_NMSP,     KC_ENT,  RAISE,  LT_NMRA\
+                                          TD_LALG,   LOWER,  KC_SPC,     KC_ENT,  RAISE,  LT_NMRA\
                                       //`--------------------------'  `--------------------------'
 
   ),
@@ -84,7 +93,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______,   KC_F5,   KC_F6,   KC_F7,   KC_F8,    KC_2,                       KC_DEL, KC_KP_4, KC_KP_5, KC_KP_6, KC_PPLS, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______,   KC_F9,  KC_F10,  KC_F11,  KC_F12,    KC_3,                     KC_PSLS , KC_KP_1, KC_KP_2, KC_KP_3, KC_PMNS, _______,\
+      _______,   KC_F9,  KC_F10,  KC_F11,  KC_F12,    KC_3,                      KC_PSLS, KC_KP_1, KC_KP_2, KC_KP_3, KC_PMNS, _______,\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, _______, _______,    _______, _______,    KC_0\
                                       //`--------------------------'  `--------------------------'
@@ -96,19 +105,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, DE_CBTO, DE_BRTO, DE_BRTC, DE_CBTC, KC_TILD,                      KC_MINS,  KC_EQL, KC_LCBR, KC_RCBR, KC_PIPE, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, DE_SLSH, DE_BSLS, DE_SHPS, XXXXXXX,  KC_GRV,                      KC_UNDS, KC_PLUS, KC_LBRC, KC_RBRC, KC_BSLS, _______,\
+      _______, DE_SLSH, DE_BSLS, DE_SHPS, DE_HASH,  KC_GRV,                      KC_UNDS, KC_PLUS, KC_LBRC, KC_RBRC, KC_BSLS, _______,\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          _______, _______, _______,    _______, _______, _______\
+                                          _______, _______, _______,    _______, _______, LT_NMRA\
                                       //`--------------------------'  `--------------------------'
   ),
 
   [_ADJUST] = LAYOUT( \
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-        RESET,  RGBRST, RGB_M_P,RGB_M_SW, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_NLCK,\
+        RESET,  RGBRST, RGB_M_P,RGB_M_SW, XXXXXXX, DE_BRTO,                      DE_BRTC, DE_PIPE, XXXXXXX, KC_SLCK, KC_CLCK, KC_NLCK,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, XXXXXXX,                     XXXXXXX, KC_LEFT,   KC_UP, KC_DOWN, KC_RGHT, _______,\
+      _______, RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, DE_CBTO,                      DE_CBTC, KC_LEFT,   KC_UP, KC_DOWN, KC_RGHT, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD, XXXXXXX,                     XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
+      _______, RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD, DE_LSTN,                      DE_GRTN, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, _______, _______,    _______, _______, _______\
                                       //`--------------------------'  `--------------------------'
@@ -158,15 +167,14 @@ void matrix_init_user(void) {
 
 // When add source files to SRC in rules.mk, you can use functions.
 const char *read_layer_state(void);
-
+const char *read_logo(void);
 void set_keylog(uint16_t keycode, keyrecord_t *record);
 const char *read_keylog(void);
-
-// const char *read_keylogs(void);
-// const char *read_mode_icon(bool swap);
-// const char *read_host_led_state(void);
-// void set_timelog(void);
-// const char *read_timelog(void);
+const char *read_keylogs(void);
+const char *read_mode_icon(bool swap);
+const char *read_host_led_state(void);
+void set_timelog(void);
+const char *read_timelog(void);
 
 void matrix_scan_user(void) {
    iota_gfx_task();
@@ -179,8 +187,10 @@ void matrix_render_user(struct CharacterMatrix *matrix) {
     matrix_write_ln(matrix, read_keylog());
     //matrix_write_ln(matrix, read_keylogs());
     //matrix_write_ln(matrix, read_mode_icon(keymap_config.swap_lalt_lgui));
-    //matrix_write_ln(matrix, read_host_led_state());
+    matrix_write_ln(matrix, read_host_led_state());
     //matrix_write_ln(matrix, read_timelog());
+  } else {
+    matrix_write(matrix, read_logo());
   }
 }
 
