@@ -29,6 +29,11 @@ enum {
   TD_LALT_LGUI = 0,
   TD_LSHIFT_OPENPARENTHESIS = 1,
   TD_RSHIFT_CLOSEPARENTHESIS = 2,
+  TD_RALT_QUOT = 3,
+  TD_A_AE = 4,
+  TD_O_OE = 5,
+  TD_U_UE = 6,
+  TD_Q_AT = 7,
 };
 
 //Tap Dance Definitions
@@ -37,8 +42,13 @@ qk_tap_dance_action_t tap_dance_actions[] = {
   [TD_LALT_LGUI]  = ACTION_TAP_DANCE_DOUBLE(KC_LALT, KC_LGUI),
   [TD_LSHIFT_OPENPARENTHESIS] = ACTION_TAP_DANCE_DOUBLE(KC_LSFT, LSFT(KC_8)),
   [TD_RSHIFT_CLOSEPARENTHESIS] = ACTION_TAP_DANCE_DOUBLE(KC_RSFT, RSFT(KC_9)),
-  // Other declarations would go here, separated by commas, if you have them
+  [TD_RALT_QUOT] = ACTION_TAP_DANCE_DOUBLE(KC_RALT, KC_QUOT),
+  [TD_A_AE] = ACTION_TAP_DANCE_DOUBLE(KC_A, KC_QUOT),
+  [TD_O_OE] = ACTION_TAP_DANCE_DOUBLE(KC_O, KC_SCLN),
+  [TD_U_UE] = ACTION_TAP_DANCE_DOUBLE(KC_U, KC_LBRC),
+  [TD_Q_AT] = ACTION_TAP_DANCE_DOUBLE(KC_Q, ALGR(KC_Q)),
 
+  // Other declarations would go here, separated by commas, if you have them
 };
 enum custom_keycodes {
   QWERTY = SAFE_RANGE,
@@ -55,6 +65,11 @@ enum custom_keycodes {
   TD_LALG = TD(TD_LALT_LGUI), //Left Alt, Left GUI
   TD_LSPO = TD(TD_LSHIFT_OPENPARENTHESIS), //Left Shift, (
   TD_RSPC = TD(TD_RSHIFT_CLOSEPARENTHESIS), //Right Shift, )
+  TD_RAQT = TD(TD_RALT_QUOT), //Right Alt, ä
+  TD_AAE = TD(TD_A_AE),
+  TD_OOE = TD(TD_O_OE),
+  TD_UUE = TD(TD_U_UE),
+  TD_QAT = TD(TD_Q_AT),
   DE_CBTO = RALT(KC_7),
   DE_BRTO = RALT(KC_8),
   DE_BRTC = RALT(KC_9),
@@ -65,7 +80,7 @@ enum custom_keycodes {
   DE_SHPS = KC_MINS,
   DE_LSTN = KC_NUBS,
   DE_GRTN = LSFT(KC_NUBS),
-  DE_PIPE = RALT(KC_NUBS)
+  DE_PIPE = RALT(KC_NUBS),
 };
 
 enum macro_keycodes {
@@ -73,23 +88,23 @@ enum macro_keycodes {
 };
 
 
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT( \
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                         KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,  KC_BSPC,\
+       KC_TAB,  TD_QAT,    KC_W,    KC_E,    KC_R,    KC_T,                         KC_Y,  TD_UUE,    KC_I,  TD_OOE,   KC_P,  KC_BSPC,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      TD_LSPO,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, TD_RSPC,\
+      TD_LSPO,  TD_AAE,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, TD_RSPC,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-     KC_LCTRL,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_QUOT,\
+     KC_LCTRL,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, TD_RAQT,\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          TD_LALG,   LOWER,  KC_SPC,     KC_ENT,  RAISE,  LT_NMRA\
+                                          TD_LALG,   LOWER,  KC_SPC,     KC_ENT,   RAISE, LT_NMRA\
                                       //`--------------------------'  `--------------------------'
-
   ),
 
   [_LOWER] = LAYOUT( \
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       KC_ESC,   KC_F1,   KC_F2,   KC_F3,   KC_F4,    KC_1,                       KC_INS, KC_KP_7, KC_KP_8, KC_KP_9, KC_PAST, KC_BSPC,\
+       KC_ESC,   KC_F1,   KC_F2,   KC_F3,   KC_F4,    KC_1,                       KC_INS, KC_KP_7, KC_KP_8, KC_KP_9, KC_PAST, S(KC_0),\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______,   KC_F5,   KC_F6,   KC_F7,   KC_F8,    KC_2,                       KC_DEL, KC_KP_4, KC_KP_5, KC_KP_6, KC_PPLS, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
@@ -113,11 +128,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_ADJUST] = LAYOUT( \
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-        RESET,  RGBRST, RGB_M_P,RGB_M_SW, XXXXXXX, DE_BRTO,                      DE_BRTC, DE_PIPE, XXXXXXX, KC_SLCK, KC_CLCK, KC_NLCK,\
+        RESET,  RGBRST, RGB_M_P,RGB_M_SW, KC_PSCR, DE_BRTO,                      DE_BRTC, DE_PIPE, KC_LSCR, KC_CLCK, KC_NLCK,  KC_DEL,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, DE_CBTO,                      DE_CBTC, KC_LEFT,   KC_UP, KC_DOWN, KC_RGHT, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD, DE_LSTN,                      DE_GRTN, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,\
+      _______, RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD, DE_LSTN,                      DE_GRTN, KC_HOME, KC_PGUP, KC_PGDN,  KC_END, _______,\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, _______, _______,    _______, _______, _______\
                                       //`--------------------------'  `--------------------------'
