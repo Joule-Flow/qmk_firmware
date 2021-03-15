@@ -1,4 +1,5 @@
 #include QMK_KEYBOARD_H
+#include "tapdance.c"
 
 #ifdef RGBLIGHT_ENABLE
 //Following line allows macro to read current RGB settings
@@ -24,32 +25,7 @@ extern uint8_t is_master;
 #define _NUMBERS 4
 #define _NAVIGATION 5
 
-//Tap Dance Declarations
-enum {
-  TD_LALT_LGUI = 0,
-  TD_LSHIFT_OPENPARENTHESIS = 1,
-  TD_RSHIFT_CLOSEPARENTHESIS = 2,
-  TD_RALT_QUOT = 3,
-  TD_A_AE = 4,
-  TD_O_OE = 5,
-  TD_U_UE = 6,
-  TD_Q_AT = 7,
-};
 
-//Tap Dance Definitions
-qk_tap_dance_action_t tap_dance_actions[] = {
-  //Tap once for left Alt, twice for Left Gui
-  [TD_LALT_LGUI]  = ACTION_TAP_DANCE_DOUBLE(KC_LALT, KC_LGUI),
-  [TD_LSHIFT_OPENPARENTHESIS] = ACTION_TAP_DANCE_DOUBLE(KC_LSFT, LSFT(KC_8)),
-  [TD_RSHIFT_CLOSEPARENTHESIS] = ACTION_TAP_DANCE_DOUBLE(KC_RSFT, RSFT(KC_9)),
-  [TD_RALT_QUOT] = ACTION_TAP_DANCE_DOUBLE(KC_RALT, KC_QUOT),
-  [TD_A_AE] = ACTION_TAP_DANCE_DOUBLE(KC_A, KC_QUOT),
-  [TD_O_OE] = ACTION_TAP_DANCE_DOUBLE(KC_O, KC_SCLN),
-  [TD_U_UE] = ACTION_TAP_DANCE_DOUBLE(KC_U, KC_LBRC),
-  [TD_Q_AT] = ACTION_TAP_DANCE_DOUBLE(KC_Q, ALGR(KC_Q)),
-
-  // Other declarations would go here, separated by commas, if you have them
-};
 enum custom_keycodes {
   QWERTY = SAFE_RANGE,
   LOWER,
@@ -66,10 +42,8 @@ enum custom_keycodes {
   TD_LSPO = TD(TD_LSHIFT_OPENPARENTHESIS), //Left Shift, (
   TD_RSPC = TD(TD_RSHIFT_CLOSEPARENTHESIS), //Right Shift, )
   TD_RAQT = TD(TD_RALT_QUOT), //Right Alt, ä
-  TD_AAE = TD(TD_A_AE),
-  TD_OOE = TD(TD_O_OE),
-  TD_UUE = TD(TD_U_UE),
   TD_QAT = TD(TD_Q_AT),
+
   DE_CBTO = RALT(KC_7),
   DE_BRTO = RALT(KC_8),
   DE_BRTC = RALT(KC_9),
@@ -81,6 +55,25 @@ enum custom_keycodes {
   DE_LSTN = KC_NUBS,
   DE_GRTN = LSFT(KC_NUBS),
   DE_PIPE = RALT(KC_NUBS),
+  DE_OPPT = LSFT(KC_8),
+  DE_CLPT = LSFT(KC_9),
+  DE_AE = KC_QUOT,
+  DE_OE = KC_SCLN,
+  DE_UE = KC_LBRC,
+
+  // Shorter homerow mod tap keycodes
+  // left hand
+  LGUI_A = LGUI_T(KC_A),
+  LALT_S = LALT_T(KC_S),
+  LCTL_D = LCTL_T(KC_D),
+  LSFT_F = LSFT_T(KC_F),
+  // right hand
+  LSFT_J = LSFT_T(KC_J),
+  LCTL_K = LCTL_T(KC_K),
+  LALT_L = LALT_T(KC_L),
+  LGUI_OE = LGUI_T(KC_SCLN),
+  RALT_ET = RALT_T(KC_ENT),
+
 };
 
 enum macro_keycodes {
@@ -92,13 +85,13 @@ enum macro_keycodes {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_QWERTY] = LAYOUT( \
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       KC_TAB,  TD_QAT,    KC_W,    KC_E,    KC_R,    KC_T,                         KC_Y,  TD_UUE,    KC_I,  TD_OOE,   KC_P,  KC_BSPC,\
+       KC_TAB,  TD_QAT,    KC_W, XXXXXXX,    KC_R,    KC_T,                         KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,  KC_BSPC,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      TD_LSPO,  TD_AAE,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, TD_RSPC,\
+      DE_OPPT,  LGUI_A,  LALT_S,  LCTL_D,  LSFT_F,    KC_G,                         KC_H,  LSFT_J,  LCTL_K,  LALT_L, LGUI_OE, DE_CLPT,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-     KC_LCTRL,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, TD_RAQT,\
+      XXXXXXX,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, XXXXXXX,\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          TD_LALG,   LOWER,  KC_SPC,     KC_ENT,   RAISE, LT_NMRA\
+                                          RALT_ET,  LOWER,  KC_SPC,        KC_E,   RAISE, LT_NMRA\
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -144,7 +137,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                         KC_6,    KC_7,    KC_8,    KC_9,    KC_0, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,\
+      _______,   DE_AE,   DE_OE,   DE_UE, DE_CBTC, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, _______, _______,    _______, _______, _______\
                                       //`--------------------------'  `--------------------------'
@@ -158,8 +151,7 @@ void persistent_default_layer_set(uint16_t default_layer) {
   default_layer_set(default_layer);
 }
 
-// Setting ADJUST layer RGB back to default
-void update_tri_layer_RGB(uint8_t layer1, uint8_t layer2, uint8_t layer3) {
+void update_multikey_layer(uint8_t layer1, uint8_t layer2, uint8_t layer3) {
   if (IS_LAYER_ON(layer1) && IS_LAYER_ON(layer2)) {
     layer_on(layer3);
   } else {
@@ -176,6 +168,8 @@ void matrix_init_user(void) {
         iota_gfx_init(!has_usb());   // turns on the display
     #endif
 }
+
+
 
 //SSD1306 OLED update loop, make sure to add #define SSD1306OLED in config.h
 #ifdef SSD1306OLED
@@ -241,19 +235,19 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case LOWER:
       if (record->event.pressed) {
         layer_on(_LOWER);
-        update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
+        update_multikey_layer(_LOWER, _RAISE, _ADJUST);
       } else {
         layer_off(_LOWER);
-        update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
+        update_multikey_layer(_LOWER, _RAISE, _ADJUST);
       }
       return false;
     case RAISE:
       if (record->event.pressed) {
         layer_on(_RAISE);
-        update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
+        update_multikey_layer(_LOWER, _RAISE, _ADJUST);
       } else {
         layer_off(_RAISE);
-        update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
+        update_multikey_layer(_LOWER, _RAISE, _ADJUST);
       }
       return false;
     case ADJUST:

@@ -19,14 +19,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #pragma once
 
-/* Select hand configuration */
-#define EE_HANDS
+#define MASTER_LEFT
 #define SSD1306OLED
 
 #define USE_SERIAL_PD2
 
+// https://docs.qmk.fm/#/tap_hold
+#define TAPPING_TERM 200
+#define PERMISSIVE_HOLD
+#define IGNORE_MOD_TAP_INTERRUPT
 #define TAPPING_FORCE_HOLD
-#define TAPPING_TERM 180
 
 #ifdef RGBLIGHT_ENABLE
     #undef RGBLED_NUM
