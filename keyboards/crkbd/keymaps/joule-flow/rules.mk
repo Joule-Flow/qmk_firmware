@@ -7,7 +7,7 @@ SRC +=  ./lib/glcdfont.c \
         ./lib/keylogger.c \
 				./lib/host_led_state_reader.c \
 				./lib/timelogger.c \
-        ./lib/mode_icon_reader.c \
+				./lib/mode_icon_reader.c \
 
 #--------------------------#
 #RGBLIGHT_ENABLE = no
