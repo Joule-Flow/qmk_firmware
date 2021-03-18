@@ -3,15 +3,23 @@
 SRC +=  ./lib/glcdfont.c \
         ./lib/rgb_state_reader.c \
         ./lib/layer_state_reader.c \
+        ./lib/logo_reader.c \
         ./lib/keylogger.c \
-        # ./lib/mode_icon_reader.c \
-        # ./lib/host_led_state_reader.c \
-        # ./lib/timelogger.c \
+				./lib/host_led_state_reader.c \
+				./lib/timelogger.c \
+				./lib/mode_icon_reader.c \
 
-RGBLIGHT_ENABLE=yes
+#--------------------------#
+#RGBLIGHT_ENABLE = no
+#RGB_MATRIX_ENABLE = WS2812
+#--------------------------|
+RGBLIGHT_ENABLE = no
+#--------------------------#
+
+TAP_DANCE_ENABLE = yes
+MOUSEKEY_ENABLE = no
 # enable OLED displays
-# OLED_DRIVER_ENABLE = yes
-TAP_DANCE_ENABLE=yes
+OLED_DRIVER_ENABLE = no
 
 # Bootloader selection
 #   Teensy       halfkay
