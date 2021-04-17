@@ -18,6 +18,8 @@ enum custom_keycodes {
   LALT_L = LALT_T(KC_L),
   LGUI_OE = LGUI_T(KC_SCLN),
 
+  // layer 1 - no mod tap keycodes
+
   // layer 2 - WORKMAN
   LCTL_H = LCTL_T(KC_H),
   LSFT_T = LSFT_T(KC_T),
@@ -25,6 +27,8 @@ enum custom_keycodes {
   LCTL_E = LCTL_T(KC_E),
   LALT_O = LALT_T(KC_O),
   LGUI_I = LGUI_T(KC_I),
+
+  // layer 3 - no mod tap keycodes
 
   // layer 4 - functions & numpad
   LGUI_L4 = LGUI_T(KC_F5),
@@ -37,10 +41,10 @@ enum custom_keycodes {
   LGUI_R4 = LGUI_T(KC_PPLS),
 
   // layer 5 - homerow numbers & shifted numbers
-  LGUI_L5 = LGUI_T(XXXXXXX),
-  LALT_L5 = LALT_T(XXXXXXX),
-  LCTL_L5 = LCTL_T(XXXXXXX),
-  LSFT_L5 = LSFT_T(XXXXXXX),
+  LGUI_L5 = LGUI_T(DE_ADIA),
+  LALT_L5 = LALT_T(DE_ODIA),
+  LCTL_L5 = LCTL_T(DE_UDIA),
+  LSFT_L5 = LSFT_T(DE_TILD),
   LSFT_R5 = LSFT_T(KC_EQL),
   LCTL_R5 = LCTL_T(KC_LCBR),
   LALT_R5 = LALT_T(KC_RCBR),
@@ -110,7 +114,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [4] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       KC_ESC,   KC_F1,   KC_F2,   KC_F3,   KC_F4,    KC_1,                       KC_INS, KC_KP_7, KC_KP_8, KC_KP_9, KC_PAST, S(KC_0),\
+       KC_ESC,   KC_F1,   KC_F2,   KC_F3,   KC_F4,    KC_1,                       KC_INS, KC_KP_7, KC_KP_8, KC_KP_9, KC_PAST,  DE_EQL,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, LGUI_L4, LALT_L4, LCTL_L4, LSFT_L4,    KC_2,                       KC_DEL, LSFT_R4, LCTL_R4, LALT_R4, LGUI_R4, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
@@ -122,11 +126,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [5] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       KC_ESC, DE_EXLM, DE_DQUO, DE_SECT,  DE_DLR, DE_PERC,                      DE_AMPR, XXXXXXX, DE_LPRN, DE_RPRN,  DE_EQL, KC_BSPC,\
+       DE_DEG, DE_EXLM, DE_DQUO, DE_SECT,  DE_DLR, DE_PERC,                      DE_AMPR, DE_SLSH, DE_LPRN, DE_RPRN,  DE_EQL, KC_BSPC,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, LGUI_L5, LALT_L5, LCTL_L5, LSFT_L5, KC_TILD,                      KC_MINS, LSFT_R5, LCTL_R5, LALT_R5, LGUI_R5, _______,\
+      _______, LGUI_L5, LALT_L5, LCTL_L5, LSFT_L5, KC_TILD,                        DE_SS, LSFT_R5, LCTL_R5, LALT_R5, LGUI_R5, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, DE_PIPE, DE_SLSH, DE_BSLS, DE_HASH,  KC_GRV,                      KC_UNDS, KC_PLUS, KC_LBRC, KC_RBRC, KC_BSLS, _______,\
+      _______, DE_PIPE, DE_SLSH, DE_BSLS, DE_HASH,  KC_GRV,                      DE_QUES, KC_PLUS, DE_TILD, KC_RBRC, KC_BSLS, _______,\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______,   MO(7), _______,    _______, _______, _______\
                                       //`--------------------------'  `--------------------------'
@@ -146,7 +150,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [7] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-        RESET,  RGBRST, XXXXXXX, XXXXXXX, KC_PSCR,  TD(L0),                       TD(R0), XXXXXXX, KC_LSCR, KC_CLCK, KC_NLCK,  KC_DEL,\
+      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_PSCR,  TD(L0),                       TD(R0), XXXXXXX, KC_LSCR, KC_CLCK, KC_NLCK,  KC_DEL,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT,  TD(L1),                       TD(R1), KC_LEFT,   KC_UP, KC_DOWN, KC_RGHT, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
