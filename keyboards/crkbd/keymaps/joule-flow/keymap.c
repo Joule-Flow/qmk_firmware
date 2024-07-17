@@ -150,11 +150,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [7] = LAYOUT_split_3x6_3(// layer 7 - navigation and only needs simple mod keys on lefthand side
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_PSCR,  TD(L0),                       TD(R0), XXXXXXX, KC_NUM, KC_CAPS, KC_SCRL,  KC_DEL,\
+      XXXXXXX, RGB_HUI, RGB_SAI, RGB_VAI, KC_PSCR,  TD(L0),                       TD(R0), XXXXXXX, KC_NUM, KC_CAPS, KC_SCRL,  KC_DEL,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT,  TD(L1),                       TD(R1), KC_LEFT,   KC_UP, KC_DOWN, KC_RGHT, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-        DF(0), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, KC_HOME, KC_PGUP, KC_PGDN,  KC_END,   DF(2),\
+        DF(0), RGB_HUD, RGB_SAD, RGB_VAD, RGB_MOD, RGB_TOG,                      XXXXXXX, KC_HOME, KC_PGUP, KC_PGDN,  KC_END,   DF(2),\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, _______, _______,    _______, _______, _______\
                                       //`--------------------------'  `--------------------------'
