@@ -1,7 +1,7 @@
-#ifdef OLED_DRIVER_ENABLE
+#ifdef OLED_ENABLE
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
-  if (!is_master) {
+  if (!is_keyboard_master()) {
     return OLED_ROTATION_180;
   }
   return OLED_ROTATION_270;
@@ -81,59 +81,78 @@ void oled_render_layer_state(void) {
   }
 }
 
-char keylog_str[24] = {};
 
-const char code_to_name[60] = {
-    ' ', ' ', ' ', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
-    'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-    'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
-    '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-    'R', 'E', 'B', 'T', '_', '-', '=', '[', ']', '\\',
-    '#', ';', '\'', '`', ',', '.', '/', ' ', ' ', ' '};
+char     key_name_internal = ' ';
+uint16_t last_keycode;
+uint8_t  last_row;
+uint8_t  last_col;
 
-void set_keylog(uint16_t keycode, keyrecord_t *record) {
-  char name = ' ';
-    if ((keycode >= QK_MOD_TAP && keycode <= QK_MOD_TAP_MAX) ||
-        (keycode >= QK_LAYER_TAP && keycode <= QK_LAYER_TAP_MAX)) { keycode = keycode & 0xFF; }
-  if (keycode < 60) {
-    name = code_to_name[keycode];
-  }
+static const char PROGMEM code_to_name[60] = {' ', ' ', ' ', ' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'R', 'E', 'B', 'T', '_', '-', '=', '[', ']', '\\', '#', ';', '\'', '`', ',', '.', '/', ' ', ' ', ' '};
 
-  // update keylog
-  snprintf(keylog_str, sizeof(keylog_str), "%c %dx%d",
-           name,
-           record->event.key.row, record->event.key.col);
+
+static void set_keylog(uint16_t keycode, keyrecord_t *record) {
+    // save the row and column (useful even if we can't find a keycode to show)
+    last_row = record->event.key.row;
+    last_col = record->event.key.col;
+
+    key_name_internal     = ' ';
+    last_keycode = keycode;
+    if (IS_QK_MOD_TAP(keycode)) {
+        if (record->tap.count) {
+            keycode = QK_MOD_TAP_GET_TAP_KEYCODE(keycode);
+        } else {
+            keycode = 0xE0 + biton(QK_MOD_TAP_GET_MODS(keycode) & 0xF) + biton(QK_MOD_TAP_GET_MODS(keycode) & 0x10);
+        }
+    } else if (IS_QK_LAYER_TAP(keycode) && record->tap.count) {
+        keycode = QK_LAYER_TAP_GET_TAP_KEYCODE(keycode);
+    } else if (IS_QK_MODS(keycode)) {
+        keycode = QK_MODS_GET_BASIC_KEYCODE(keycode);
+    } else if (IS_QK_ONE_SHOT_MOD(keycode)) {
+        keycode = 0xE0 + biton(QK_ONE_SHOT_MOD_GET_MODS(keycode) & 0xF) + biton(QK_ONE_SHOT_MOD_GET_MODS(keycode) & 0x10);
+    }
+    if (keycode > ARRAY_SIZE(code_to_name)) {
+        return;
+    }
+
+    // update keylog
+    key_name_internal = pgm_read_byte(&code_to_name[keycode]);
 }
 
 void oled_render_keylog(void) {
-    oled_write(keylog_str, false);
+    oled_write_char('0' + last_row, false);
+    oled_write_P(PSTR("x"), false);
+    oled_write_char('0' + last_col, false);
+    oled_write_P(PSTR(", k"), false);
+    oled_write_P(PSTR(":"), false);
+    oled_write_char(key_name_internal, false);
 }
 
 void oled_render_logo(void) {
   static const char PROGMEM crkbd_logo[] = {
-      0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8a, 0x8b, 0x8c, 0x8d, 0x8e, 0x8f, 0x90, 0x91, 0x92, 0x93, 0x94,
-      0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8, 0xa9, 0xaa, 0xab, 0xac, 0xad, 0xae, 0xaf, 0xb0, 0xb1, 0xb2, 0xb3, 0xb4,
-      0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7, 0xc8, 0xc9, 0xca, 0xcb, 0xcc, 0xcd, 0xce, 0xcf, 0xd0, 0xd1, 0xd2, 0xd3, 0xd4,
-      0};
-
-  oled_write_P(crkbd_logo, false);
+        0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F, 0x90, 0x91, 0x92, 0x93, 0x94,
+        0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF, 0xB0, 0xB1, 0xB2, 0xB3, 0xB4,
+        0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0x00
+    };
+    oled_write_P(crkbd_logo, false);
 }
 
-void oled_task_user(void) {
-    if (is_master) {
-      oled_render_active_locks();
-      oled_render_layer_state();
-      oled_render_keylog();
-
+bool oled_task_user(void) {
+    if (is_keyboard_master()) {
+        oled_render_active_locks();
+        oled_render_layer_state();
+        oled_render_keylog();
     } else {
         oled_render_logo();
+        oled_scroll_left();
     }
+    return false;
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  if (record->event.pressed) {
-    set_keylog(keycode, record);
-  }
-  return true;
+    if (record->event.pressed) {
+        set_keylog(keycode, record);
+    }
+
+    return true;
 }
-#endif // OLED_DRIVER_ENABLE
+#endif // OLED_ENABLE

@@ -150,13 +150,35 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [7] = LAYOUT_split_3x6_3(// layer 7 - navigation and only needs simple mod keys on lefthand side
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, KC_PSCR,  TD(L0),                       TD(R0), XXXXXXX, KC_NUM, KC_CAPS, KC_SCRL,  KC_DEL,\
+      XXXXXXX, RGB_HUI, RGB_SAI, RGB_VAI, KC_PSCR,  TD(L0),                       TD(R0), KC_NUM,  CW_TOGG, KC_CAPS, KC_SCRL,  KC_DEL,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, KC_LGUI, KC_LALT, KC_LCTL, KC_LSFT,  TD(L1),                       TD(R1), KC_LEFT,   KC_UP, KC_DOWN, KC_RGHT, _______,\
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-        DF(0), XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX, KC_HOME, KC_PGUP, KC_PGDN,  KC_END,   DF(2),\
+        DF(0), RGB_HUD, RGB_SAD, RGB_VAD, RGB_MOD, RGB_TOG,                      XXXXXXX, KC_HOME, KC_PGUP, KC_PGDN,  KC_END,   DF(2),\
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, _______, _______,    _______, _______, _______\
                                       //`--------------------------'  `--------------------------'
   )
 };
+
+
+bool caps_word_press_user(uint16_t keycode) {
+    switch (keycode) {
+        // Keycodes that continue Caps Word, with shift applied.
+        case KC_A ... KC_Z:
+        case KC_MINS:
+            add_weak_mods(MOD_BIT(KC_LSFT));  // Apply shift to next key.
+            return true;
+
+        // Keycodes that continue Caps Word, without shifting.
+        case KC_1 ... KC_0:
+        case KC_BSPC:
+        case KC_DEL:
+        case KC_UNDS:
+        case KC_SLSH:
+            return true;
+
+        default:
+            return false;  // Deactivate Caps Word.
+    }
+}
